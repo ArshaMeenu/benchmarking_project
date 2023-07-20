@@ -1,0 +1,51 @@
+ {% extends 'basic.html' %}
+{% load static %}
+{% load myfilters %}
+{% block title %}index page {% endblock %}
+{% block css %}
+
+ <style>
+   .errorlist{
+      color:red
+     }
+
+ </style>
+
+{% endblock %}
+
+{% block content %}
+<!--&lt;!&ndash; added cdn for recpatcha&ndash;&gt; <script src="https://www.google.com/recaptcha/api.js" async defer> </script>-->
+    <div class="container pt-5">
+        <form method="POST">
+            {% csrf_token %}
+            <!--{{form.as_p}}-->
+
+            {{ form.non_field_errors }}
+            <label for="id_email" class="login_labels">Email Address*</label>
+            {{ form.email.errors }}
+            {{ form.email |addclass:'form-control'| addplaceholder:'EMAIL ADDRESS'}}
+
+            <label for="id_phone" class="login_labels">Phone No.*</label>
+            {{ form.phone.errors }}
+            {{ form.phone |addclass:'form-control'| addplaceholder:'PHONE NUMBER'}}
+
+            <label for="id_query" class="login_labels">Query.*</label>
+            {{ form.query.errors }}
+            {{ form.query |addclass:'form-control'| addplaceholder:'QUERY'}}
+
+            <label for="id_name" class="login_labels">Name*</label>
+            {{ form.name.errors }}
+            {{ form.name |addclass:'form-control'| addplaceholder:'NAME'}}
+
+            <label for="id_captcha" class="login_labels ">Captcha*</label>
+             {{ form.captcha.errors }}
+              {{ form.captcha }}
+
+            <!--another option for recpatcha-->
+<!--            <div class="g-recaptcha" data-theme="light" style="transform:scale(0.77);-webkit-transform:scale(0.77);transform-origin:0 0;-webkit-transform-origin:0 0;"  data-sitekey="6LezoDInAAAAAAw8Pq3HrexXC4Q6eTFTHp5YvFTd"></div>-->
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    </div>
+{% endblock %}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Contact List View</title>
+
+    <style>
+        table, th, td {
+          border:1px solid black;
+          border-collapse: collapse;
+          border-color: #96D4D4;
+
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div class="container-fluid">
+    <h1>Contacts</h1>
+    <div class="row">
+        <div class="col-sm-3  pt-5" style="background-color:lavender;">
+            <a style="font-size:30px;" class="text-danger" href="{% url 'create-view' %}">Create</a><br>
+            <a style="font-size:30px;"  class="text-primary"  href="{% url 'form-view'  %}">FormView</a> <br>
+            <a style="font-size:30px;"  class="text-success"  href="{% url 'template-view'  %}">TemplateView</a>
+
+        </div>
+        {% if object_list %}
+        <div class="col-sm-9  pt-5" style="background-color:lavenderblush;">
+            <table class="table ">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>File</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in object_list %}
+                    <tr>
+                        <td>{{ contact.name }}</td>
+                        <td>{{ contact.email }}</td>
+                        <td>{{ contact.address }}</td>
+                        <td>{{ contact.phone }}</td>
+                        <td>{{ contact.file }}</td>
+                        <td>{{ contact.image }}</td>
+
+                        <td>
+                            <a  href="{% url 'detail-view' contact.id  %}">details</a> /
+                            <a  href="{% url 'update-view' contact.id  %}">update</a> /
+                            <a  href="{% url 'delete-view' contact.id  %}">delete</a> /
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if is_paginated %}
+                {% include "_pagination.html" %}
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+        <p style="color:blue;font-size:20px;padding-left:40px">There are no contacts.</p>
+    {% endif %}
+</div>
+
+<!-- Bootstrap core JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>

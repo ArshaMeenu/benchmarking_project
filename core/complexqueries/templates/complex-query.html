@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Complex Queries </title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-5 mb-3 text-primary ">Django Complex Query</h1><hr>
+    <div class="row">
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3 ">F Expression in Complex Query</h3><hr>
+            {{F_expression}}
+        </div>
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Q Expression in Complex Query</h3><hr>
+            {{Q_expression}}
+        </div>
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Annotate in Complex Query</h3><hr>
+            {{annotate}}
+        </div>
+
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Aggregation in Complex Query</h3><hr>
+            {{aggregation}} <br> {{Average_goals}}} <br> {{Minimum_goals}} <br> {{Maximum_goals}}
+        </div>
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Count in Aggregation of Complex Query</h3><hr>
+            {{Count_goals}}}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Select Related in Aggregation of  Complex Query</h3><hr>
+            {{sr_teams}}
+        </div>
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Prefetch Related in Aggregation of Complex Query</h3><hr>
+            {{pr_competition_list}}}
+        </div>
+        <div class="col-lg-4">
+            <h3 class="mt-5 mb-3">Prefetch Class in Aggregation of Complex Query</h3><hr>
+            {{pc_team_list}}}
+        </div>
+    </div>
+</div>
+<!-- Bootstrap core JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>

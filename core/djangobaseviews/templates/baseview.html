@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Base View</title>
+    <style>
+        table, th, td {
+          border:1px solid black;
+          border-collapse: collapse;
+          border-color: #96D4D4;
+        }
+        td{
+        width:25%
+        }
+    </style>
+</head>
+<body>
+    <div>
+         {% if message %}
+              <div class="alert alert-primary" role="alert">
+                {{message}}
+              </div>
+         {% endif %}
+    </div>
+    <div>
+         {% if form %}
+            <form method="POST" action ="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button type="submit" class="btn btn-primary">Add Data</button>
+            </form>
+        {% endif %}
+    </div>
+    <br><hr><br><br>
+    <div>
+        {% if data %}
+            <table>
+                <tr style="text-align:center">
+                    <th >Id</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+                {% for data in data %}
+                <tr style="text-align:center">
+                    <td>{{data.id}}</td>
+                    <td>{{data.title}}</td>
+                    <td>{{data.description}}</td>
+                    <td> <a href="{% url 'edit-view' data.id %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> </a> --
+                         <a href="{% url 'delete-view' data.id %}"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+</div>
+<!-- Bootstrap core JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>

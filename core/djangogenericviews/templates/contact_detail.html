@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Contact Detail View</title>
+</head>
+<body>
+
+
+<div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Book Details #{{contact.id}}</h5>
+        </div>
+        <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">Contact Name</dt>
+          <dd class="col-sm-9">{{ contact.name }}</dd>
+          <dt class="col-sm-3">Email</dt>
+          <dd class="col-sm-9">{{ contact.email }}</dd>
+          <dt class="col-sm-3">Address</dt>
+          <dd class="col-sm-9">{{ contact.address }}</dd>
+          <dt class="col-sm-3">PhoneNumber</dt>
+          <dd class="col-sm-9">{{ contact.phone }}</dd>
+          <dt class="col-sm-3">File Upload</dt>
+          <dd class="col-sm-9">{{ contact.file }}</dd>
+          <dt class="col-sm-3">Image Upload</dt>
+          <dd class="col-sm-9">{{ contact.image }}</dd>
+          <dt class="col-sm-3"> Added By</dt>
+          <dd class="col-sm-9">{{ signed_by }}</dd>
+
+        </dl>
+        </div>
+</div>
+
+
+<!-- Bootstrap core JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>
