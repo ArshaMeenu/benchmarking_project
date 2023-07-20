@@ -2,9 +2,9 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, CreateView
 
-from .forms import ContactUsForm
+from .forms import ContactUsForm, RegistrationForm
 
 
 # function base
@@ -87,6 +87,15 @@ class ContactUs(FormView):
             # form.errors['query'] = 'Query length is not right.'
         response = super().form_invalid(form)
         return response
+
+    def get_success_url(self): #dynamic url
+        return reverse('mastering_django:index-function-view')
+
+
+class RegisterView(CreateView):
+    template_name = 'register.html'
+    form_class = RegistrationForm
+    # success_url = reverse('mastering_django:index-function-view')
 
     def get_success_url(self): #dynamic url
         return reverse('mastering_django:index-function-view')

@@ -33,4 +33,10 @@ class ContactUsForm(forms.ModelForm):
 
     class Meta:
         model = Contact
-        fields = ['name','email','query','phone','captcha']
+        fields = ['name', 'email', 'query', 'phone', 'captcha']
+
+
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ["email","name", "password1", "password2"]
