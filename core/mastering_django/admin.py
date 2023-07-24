@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 from .models import (Cart, Contact, Customer, CustomUser, Deal, Order, Product,
-                     ProductInCart, Seller)
+                     ProductInCart, Seller, SellerAdditional, CustomerAdditional)
 
 admin.site.register(Product)
 admin.site.register(ProductInCart)
@@ -17,12 +17,12 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ("email", "is_staff", "is_active","type")
+    list_display = ("email", "is_staff", "is_active", "type")
     # list_display = ("email", "is_staff", "is_active", "is_customer", "is_seller")
     list_filter = ("email", "is_staff", "is_active",)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("is_staff", "is_active","type")}),
+        ("Permissions", {"fields": ("is_staff", "is_active", "type")}),
     )
     add_fieldsets = (
         (None, {
@@ -113,9 +113,18 @@ class DealAdmin(admin.ModelAdmin):
     inlines = [DealInline]
     exclude = ('user',)
 
+class SellerAdditionalInline(admin.TabularInline):
+    model = SellerAdditional
+
+
+class SellerAdmin(admin.ModelAdmin):
+    inlines = (
+        SellerAdditionalInline,
+    )
 
 admin.site.register(Deal, DealAdmin)
 # admin.site.register(UserType)
 admin.site.register(Customer)
-admin.site.register(Seller)
+admin.site.register(Seller, SellerAdmin)
 admin.site.register(Contact)
+admin.site.register(CustomerAdditional)

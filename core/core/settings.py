@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'debug_toolbar',
     'captcha',
+    'multiselectfield',
 
 
     # apps

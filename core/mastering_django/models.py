@@ -8,6 +8,10 @@ from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomUserManager
 
+from multiselectfield import MultiSelectField
+from django.db.models import Q
+
+
 # Custom user model  - reference :https://testdriven.io/blog/django-custom-user-model/#forms
 
 # class UserType(models.Model):  # 3.separate class for roles and manytomanyfield in usermodel
@@ -57,7 +61,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         CUSTOMER = "Customer", "CUSTOMER"
 
     default_type = Types.CUSTOMER
-    type = models.CharField(_('Type'), max_length=255, choices=Types.choices, default=default_type)
+
+    #type = models.CharField(_('Type'), max_length=255, choices=Types.choices, default=default_type)
+    type = MultiSelectField(verbose_name = 'default types',choices=Types.choices,blank=True,max_choices=3,max_length=255,default=[])
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -70,7 +76,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # if not the code below then taking default value in User model not in proxy model
     def save(self, *args, **kwargs):
         if not self.id:
-            self.type = self.default_type
+            # self.type = self.default_type
+            self.type.append(self.default_type)
         return super().save(*args, **kwargs)
 
 
@@ -88,12 +95,16 @@ class SellerAdditional(models.Model):
 # model manager for proxy model
 class SellerManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs).filter(type=CustomUser.Types.SELLER)
+        # return super().get_queryset(*args, **kwargs).filter(type=CustomUser.Types.SELLER)
+        return super().get_queryset(*args, **kwargs).filter(Q(type__contains = CustomUser.Types.SELLER))
+
 
 
 class CustomerManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs).filter(type=CustomUser.Types.CUSTOMER)
+        # return super().get_queryset(*args, **kwargs).filter(type=CustomUser.Types.CUSTOMER)
+        return super().get_queryset(*args, **kwargs).filter(Q(type__contains = CustomUser.Types.CUSTOMER))
+
 
 
 # Proxy Models .They don't create a separate table

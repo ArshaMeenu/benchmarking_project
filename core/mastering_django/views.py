@@ -1,10 +1,11 @@
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView, TemplateView, CreateView
 
 from .forms import ContactUsForm, RegistrationForm
+from .models import SellerAdditional, CustomUser
 
 
 # function base
@@ -98,4 +99,17 @@ class RegisterView(CreateView):
     # success_url = reverse('mastering_django:index-function-view')
 
     def get_success_url(self): #dynamic url
-        return reverse('mastering_django:index-function-view')
+        print('succ')
+        return reverse_lazy('mastering_django:index-function-view')
+
+    # override the post
+    def post(self,request,*args,**kwargs):
+        response = super().post(request,*args,**kwargs)
+        if response.status_code ==302:
+            gst = request.POST.get('gst')
+            warehouse_location = request.POST.get('warehouse_location')
+            user = CustomUser.objects.get(email = request.POST.get('email'))
+            s_add = SellerAdditional.objects.create(user = user, gst = gst, warehouse_location = warehouse_location)
+            return response
+        else:
+            return response
