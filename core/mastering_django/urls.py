@@ -13,5 +13,7 @@ urlpatterns = [
     path('contactus-class-view/', views.ContactUs.as_view(), name="contactus-class-view"),
     # authentication endpoints
     path('register/', views.RegisterView.as_view(), name='register'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('signup-seller/', views.RegisterViewSeller.as_view(), name='signup-seller'),
 
 ]

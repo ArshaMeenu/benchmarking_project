@@ -171,3 +171,8 @@ AUTH_USER_MODEL = 'mastering_django.CustomUser'
 RECAPTCHA_PUBLIC_KEY = '6LezoDInAAAAAAw8Pq3HrexXC4Q6eTFTHp5YvFTd'
 RECAPTCHA_PRIVATE_KEY = '6LezoDInAAAAANu1UII0I8DmcMd3glWPWUX5-7or'
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+
+# LOGIN URLs
+LOGIN_URL = 'mastering_django:login'
+LOGIN_REDIRECT_URL = 'mastering_django:index-function-view'
+LOGOUT_REDIRECT_URL = 'mastering_django:index-function-view'

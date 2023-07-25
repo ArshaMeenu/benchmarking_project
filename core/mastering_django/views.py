@@ -4,8 +4,10 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView, TemplateView, CreateView
 
-from .forms import ContactUsForm, RegistrationForm
+from django.contrib.auth.views import LoginView, LogoutView
+from .forms import ContactUsForm, RegistrationForm, RegistrationFormSeller2
 from .models import SellerAdditional, CustomUser
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # function base
@@ -17,6 +19,7 @@ def indexfunctionview(request):
         'age': age, 'arr': arr, 'dic': dic
     })
     # return HttpResponse('<h1>hello</h1>')
+
 
 # classbasedview
 class IndexClassView(TemplateView):
@@ -71,6 +74,7 @@ def contactus2(request):
 class ContactUs(FormView):
     form_class = ContactUsForm
     template_name = 'contactus2.html'
+
     # success_url = '/index-function-view' #hardcoded url
 
     def form_valid(self, form):
@@ -89,27 +93,52 @@ class ContactUs(FormView):
         response = super().form_invalid(form)
         return response
 
-    def get_success_url(self): #dynamic url
+    def get_success_url(self):  # dynamic url
         return reverse('mastering_django:index-function-view')
 
 
+# class RegisterViewSeller(CreateView):
+#     template_name = 'register.html'
+#     form_class = RegistrationFormSeller
+#     # success_url = reverse('mastering_django:index-function-view')
+#
+#     def get_success_url(self): #dynamic url
+#         return reverse_lazy('mastering_django:index-function-view')
+#
+#     # override the post
+#     def post(self,request,*args,**kwargs):
+#         response = super().post(request,*args,**kwargs)
+#         if response.status_code ==302:
+#             gst = request.POST.get('gst')
+#             warehouse_location = request.POST.get('warehouse_location')
+#             user = CustomUser.objects.get(email = request.POST.get('email'))
+#             s_add = SellerAdditional.objects.create(user = user, gst = gst, warehouse_location = warehouse_location)
+#             return response
+#         else:
+#             return response
+
 class RegisterView(CreateView):
-    template_name = 'register.html'
+    template_name = 'registerbasicuser.html'
     form_class = RegistrationForm
+
     # success_url = reverse('mastering_django:index-function-view')
 
-    def get_success_url(self): #dynamic url
-        print('succ')
+    def get_success_url(self):  # dynamic url
         return reverse_lazy('mastering_django:index-function-view')
 
-    # override the post
-    def post(self,request,*args,**kwargs):
-        response = super().post(request,*args,**kwargs)
-        if response.status_code ==302:
-            gst = request.POST.get('gst')
-            warehouse_location = request.POST.get('warehouse_location')
-            user = CustomUser.objects.get(email = request.POST.get('email'))
-            s_add = SellerAdditional.objects.create(user = user, gst = gst, warehouse_location = warehouse_location)
-            return response
-        else:
-            return response
+
+class LoginViewUser(LoginView):
+    template_name = "login.html"
+
+
+class RegisterViewSeller(LoginRequiredMixin, CreateView):
+    template_name = 'registerseller.html'
+    form_class = RegistrationFormSeller2
+    success_url = reverse_lazy('mastering_django:index-function-view')
+
+    def form_valid(self, form):
+        user = self.request.user
+        user.type.append(user.Types.SELLER)
+        user.save()
+        form.instance.user = self.request.user
+        return super().form_valid(form)

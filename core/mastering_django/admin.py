@@ -127,4 +127,6 @@ admin.site.register(Deal, DealAdmin)
 admin.site.register(Customer)
 admin.site.register(Seller, SellerAdmin)
 admin.site.register(Contact)
+admin.site.register(SellerAdditional)
 admin.site.register(CustomerAdditional)
+
