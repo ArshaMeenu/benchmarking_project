@@ -1,6 +1,3 @@
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib import admin
 from django.urls import include, path
 
 from . import views
@@ -13,7 +10,8 @@ urlpatterns = [
     path('contactus-class-view/', views.ContactUs.as_view(), name="contactus-class-view"),
     # authentication endpoints
     path('register/', views.RegisterView.as_view(), name='register'),
-    path('login/', views.LoginView.as_view(), name='login'),
+    path('login/', views.LoginViewUser.as_view(), name='login'),
     path('signup-seller/', views.RegisterViewSeller.as_view(), name='signup-seller'),
+    path('logout/', views.LogoutViewUser.as_view(), name='logout'),
 
 ]

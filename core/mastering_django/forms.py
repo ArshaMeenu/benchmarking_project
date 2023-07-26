@@ -18,7 +18,7 @@ class CustomUserChangeForm(UserChangeForm):
         model = CustomUser
         fields = ("email",)
 
-
+# use simple form
 # class ContactUsForm(forms.Form):
 #     email = forms.EmailField(required=True)
 #     name = forms.CharField(max_length=100, required=True)

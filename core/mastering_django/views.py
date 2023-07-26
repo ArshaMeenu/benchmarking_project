@@ -10,10 +10,10 @@ from .models import SellerAdditional, CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-# function base
+# function based view
 def indexfunctionview(request):
-    age = 10,
-    arr = ['asr', 888, 'poa', 'flapjack', 887],
+    age = 10
+    arr = ['asr', 888, 'poa', 'flapjack', 887]
     dic = {'a': 1, 'b': 'oak'}
     return render(request, 'index.html', {
         'age': age, 'arr': arr, 'dic': dic
@@ -21,7 +21,7 @@ def indexfunctionview(request):
     # return HttpResponse('<h1>hello</h1>')
 
 
-# classbasedview
+# class based view
 class IndexClassView(TemplateView):
     template_name = 'index.html'
 
@@ -42,7 +42,7 @@ def contactus(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST['phone']
-        if len(phone) < 10 or len(phone) > 10:
+        if len(phone) < 10 or len(phone) > 10: # phone number validation
             # return HttpResponse('error in entry')
             raise ValidationError('phone number length is not right')
         query = request.POST['query']
@@ -50,7 +50,7 @@ def contactus(request):
     return render(request, 'contactus.html')
 
 
-# custom forms
+# function based custom forms
 def contactus2(request):
     if request.method == 'POST':
         form = ContactUsForm(request.POST)
@@ -74,7 +74,6 @@ def contactus2(request):
 class ContactUs(FormView):
     form_class = ContactUsForm
     template_name = 'contactus2.html'
-
     # success_url = '/index-function-view' #hardcoded url
 
     def form_valid(self, form):
@@ -120,7 +119,6 @@ class ContactUs(FormView):
 class RegisterView(CreateView):
     template_name = 'registerbasicuser.html'
     form_class = RegistrationForm
-
     # success_url = reverse('mastering_django:index-function-view')
 
     def get_success_url(self):  # dynamic url
@@ -142,3 +140,8 @@ class RegisterViewSeller(LoginRequiredMixin, CreateView):
         user.save()
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
+class LogoutViewUser(LogoutView):
+    success_url = reverse_lazy('mastering_django:index-function-view')
+
