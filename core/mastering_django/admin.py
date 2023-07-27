@@ -3,8 +3,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
-from .models import (Cart, Contact, Customer, CustomUser, Deal, Order, Product,
-                     ProductInCart, Seller, SellerAdditional, CustomerAdditional)
+from .models import (Cart, Contact, Customer, CustomerAdditional, CustomUser,
+                     Deal, Order, Product, ProductInCart, Seller,
+                     SellerAdditional)
 
 admin.site.register(Product)
 admin.site.register(ProductInCart)

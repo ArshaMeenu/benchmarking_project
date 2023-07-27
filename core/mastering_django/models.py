@@ -2,15 +2,12 @@ from django.contrib.auth.models import (AbstractBaseUser, AbstractUser,
                                         PermissionsMixin, User)
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models import Manager
+from django.db.models import Manager, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from multiselectfield import MultiSelectField
 
 from .managers import CustomUserManager
-
-from multiselectfield import MultiSelectField
-from django.db.models import Q
-
 
 # Custom user model  - reference :https://testdriven.io/blog/django-custom-user-model/#forms
 

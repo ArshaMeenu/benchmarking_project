@@ -176,3 +176,9 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 LOGIN_URL = 'mastering_django:login'
 LOGIN_REDIRECT_URL = 'mastering_django:index-function-view'
 LOGOUT_REDIRECT_URL = 'mastering_django:index-function-view'
+
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR : 'danger'   # here we can override tags meaning in place of there actual color replace by another
+}
