@@ -1,21 +1,20 @@
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.views.generic import CreateView, FormView, TemplateView
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.views.generic import CreateView, FormView, TemplateView, ListView
 
 from .forms import ContactUsForm, RegistrationForm, RegistrationFormSeller2
-from .models import CustomUser, SellerAdditional
+from .models import CustomUser
 from .tokens import account_activation_token
 
 
@@ -128,7 +127,7 @@ class ContactUs(FormView):
 
 
 class RegisterView(CreateView):
-    template_name = 'registerbasicuser.html'
+    template_name = 'registerbaseuser.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('mastering_django:signup')
 
@@ -173,8 +172,6 @@ class RegisterView(CreateView):
             return response
 
 
-
-
 class LoginViewUser(LoginView):
     template_name = "login.html"
 
@@ -194,3 +191,7 @@ class RegisterViewSeller(LoginRequiredMixin, CreateView):
 
 class LogoutViewUser(LogoutView):
     success_url = reverse_lazy('mastering_django:index-function-view')
+
+# ecommerce online shopping cart project views
+class ListProduct(ListView):
+
