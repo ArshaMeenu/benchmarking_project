@@ -1,13 +1,13 @@
-from django.contrib.auth.models import (AbstractBaseUser, AbstractUser,
-                                        PermissionsMixin, User)
+from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin)
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Manager, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from multiselectfield import MultiSelectField
-
+from .constants import PaymentStatus
 from .managers import CustomUserManager
+
 
 # Custom user model  - reference :https://testdriven.io/blog/django-custom-user-model/#forms
 
@@ -59,8 +59,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     default_type = Types.CUSTOMER
 
-    #type = models.CharField(_('Type'), max_length=255, choices=Types.choices, default=default_type)
-    type = MultiSelectField(verbose_name = 'default types',choices=Types.choices,blank=True,max_choices=3,max_length=255,default=[])
+    # type = models.CharField(_('Type'), max_length=255, choices=Types.choices, default=default_type)
+    type = MultiSelectField(verbose_name='default types', choices=Types.choices, blank=True, max_choices=3,
+                            max_length=255, default=[])
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -93,15 +94,13 @@ class SellerAdditional(models.Model):
 class SellerManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
         # return super().get_queryset(*args, **kwargs).filter(type=CustomUser.Types.SELLER)
-        return super().get_queryset(*args, **kwargs).filter(Q(type__contains = CustomUser.Types.SELLER))
-
+        return super().get_queryset(*args, **kwargs).filter(Q(type__contains=CustomUser.Types.SELLER))
 
 
 class CustomerManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
         # return super().get_queryset(*args, **kwargs).filter(type=CustomUser.Types.CUSTOMER)
-        return super().get_queryset(*args, **kwargs).filter(Q(type__contains = CustomUser.Types.CUSTOMER))
-
+        return super().get_queryset(*args, **kwargs).filter(Q(type__contains=CustomUser.Types.CUSTOMER))
 
 
 # Proxy Models .They don't create a separate table
@@ -164,6 +163,12 @@ class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=255)
     price = models.FloatField()
+    image = models.ImageField(upload_to='mastering_django/productimages', default=None, null=True, blank=True)
+    date_added = models.DateTimeField(default=timezone.now)
+    brand = models.CharField(max_length=1000)
+
+    class Meta:
+        ordering = ['-price']
 
     @classmethod
     def updateprice(cls, product_id, price):
@@ -214,13 +219,45 @@ class ProductInCart(models.Model):
 
 class Order(models.Model):
     status_choices = {
-        (1, 'Not packed'),
+        (1, 'not packed'),
         (2, 'ready for shipment'),
         (3, 'shipped'),
         (4, 'delivered')
     }
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     status = models.IntegerField(choices=status_choices, default=1)
+
+    total_amount = models.FloatField()
+    payment_status = models.CharField(_("Payment Status"),
+                                      default=PaymentStatus.PENDING,
+                                      max_length=254,
+                                      blank=False,
+                                      null=False,
+                                      )
+    order_id = models.CharField(unique=True, max_length=100, null=True, blank=True, default=None)
+    datetime_of_payment = models.DateTimeField(default=timezone.now)
+    # related to razorpay
+    razorpay_order_id = models.CharField(max_length=500, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=500, null=True, blank=True)
+    razorpay_signature = models.CharField(max_length=500, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.order_id is None and self.datetime_of_payment and self.id:
+            self.order_id = self.datetime_of_payment.strftime('PAY2ME%Y%m%dODR') + str(self.id)
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.user.email + " " + str(self.id)
+
+
+class ProductInOrder(models.Model):
+    class Meta:
+        unique_together = (('order', 'product'),)
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.FloatField()
 
 
 class Deal(models.Model):

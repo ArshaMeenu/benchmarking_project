@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'captcha',
     'multiselectfield',
 
-
     # apps
     'emailattach',
     'djangobaseviews',
@@ -60,7 +59,6 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
-
 
 ROOT_URLCONF = "core.urls"
 
@@ -130,7 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/'),
 ]
@@ -166,7 +164,6 @@ DEFAULT_FROM_EMAIL = "arsha@sayonetech.com"
 
 AUTH_USER_MODEL = 'mastering_django.CustomUser'
 
-
 # recaptcha config
 RECAPTCHA_PUBLIC_KEY = '6LezoDInAAAAAAw8Pq3HrexXC4Q6eTFTHp5YvFTd'
 RECAPTCHA_PRIVATE_KEY = '6LezoDInAAAAANu1UII0I8DmcMd3glWPWUX5-7or'
@@ -177,8 +174,12 @@ LOGIN_URL = 'mastering_django:login'
 LOGIN_REDIRECT_URL = 'mastering_django:index-function-view'
 LOGOUT_REDIRECT_URL = 'mastering_django:index-function-view'
 
-
 from django.contrib.messages import constants as messages
+
 MESSAGE_TAGS = {
-    messages.ERROR : 'danger'   # here we can override tags meaning in place of there actual color replace by another
+    messages.ERROR: 'danger'  # here we can override tags meaning in place of there actual color replace by another
 }
+
+# PAYMENT GATEWAY SETTINGS
+RAZORPAY_KEY_ID = 'rzp_test_XoxDlCxqzVtN7E'
+RAZORPAY_KEY_SECRET = 'OxfQbxinLYiZiUQq6ksXbRaN'

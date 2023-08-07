@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 from .models import (Cart, Contact, Customer, CustomerAdditional, CustomUser,
                      Deal, Order, Product, ProductInCart, Seller,
-                     SellerAdditional)
+                     SellerAdditional,ProductInOrder)
 
 admin.site.register(Product)
 admin.site.register(ProductInCart)
@@ -130,4 +130,6 @@ admin.site.register(Seller, SellerAdmin)
 admin.site.register(Contact)
 admin.site.register(SellerAdditional)
 admin.site.register(CustomerAdditional)
+admin.site.register(ProductInOrder)
+
 

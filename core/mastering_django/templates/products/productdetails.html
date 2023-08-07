@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load myfilters %}
+{% block title %}
+{% endblock %}
+{% block css %}
+<style>
+   .main-area{
+       padding:20px;
+       background-color:#f8f9fa
+   }
+  .product-cards{
+      background-color:white;
+      padding:20px
+
+  }
+
+
+</style>
+{% endblock %}
+{% block content %}
+{% csrf_token %}
+<div class="main-area">
+    <div class="product-cards">
+        <div class="row featurette">
+            <div class="col-md-5">
+                <img src="/media/{{product.image}}" class="card-img-top" alt="productimage" style="width:100%;height:100%;border:1px solid black">
+            </div>
+            <div class="col-md-7">
+                <h2 class="featurette-heading fw-normal lh-1">{{product.product_name}}<hr>
+                <p>Rs.{{product.price}}</p></h2>
+                <a class="btn btn-primary" href="{% url 'mastering_django:add-to-cart' id=product.product_id %}" role="button">Add To Cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

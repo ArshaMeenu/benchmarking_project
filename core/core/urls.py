@@ -14,4 +14,11 @@ urlpatterns = [
                        include(('mastering_django.urls', 'mastering_django'), namespace='mastering_django')),
 
                   path("__debug__/", include("debug_toolbar.urls")),  # for debug tooler
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+              ]
+
+
+# when debug = true
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
