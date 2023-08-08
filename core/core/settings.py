@@ -1,5 +1,6 @@
 import os.path
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,8 +93,17 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    'mastering_django': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mastering_django',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+        }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -174,7 +184,6 @@ LOGIN_URL = 'mastering_django:login'
 LOGIN_REDIRECT_URL = 'mastering_django:index-function-view'
 LOGOUT_REDIRECT_URL = 'mastering_django:index-function-view'
 
-from django.contrib.messages import constants as messages
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'  # here we can override tags meaning in place of there actual color replace by another
