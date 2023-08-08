@@ -1,5 +1,7 @@
 import json
 import razorpay
+import os
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from core import settings
 from django.contrib import messages
@@ -9,13 +11,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives, EmailMessage
 from django.core.paginator import PageNotAnInteger, Paginator, EmptyPage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string, get_template
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -24,8 +26,12 @@ from .constants import PaymentStatus
 from .forms import ContactUsForm, RegistrationForm, RegistrationFormSeller2, CartForm
 from .models import CustomUser, Product, ProductInCart, Cart, ProductInCart, Order, ProductInOrder
 from .tokens import account_activation_token
+from io import BytesIO
+from xhtml2pdf import pisa
+
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 
 # function based view
 def indexfunctionview(request):
@@ -353,7 +359,6 @@ def payment(request):
     if request.method == "POST":
         try:
             cart = Cart.carts.filter(user=request.user)
-
             products_in_cart = ProductInCart.objects.filter(cart__in=cart)
             final_price = 0
             if (len(products_in_cart) > 0):
@@ -367,9 +372,7 @@ def payment(request):
             else:
                 return HttpResponse("No product in cart")
         except:
-            print()
             return HttpResponse("No product in cart")
-
         order.total_amount = final_price
         order.save()
         order_currency = 'INR'
@@ -390,78 +393,174 @@ def payment(request):
 
 
 @csrf_exempt
-def callBack(request):  # reference :https://scalereal.com/backend/2021/12/20/razorpay-payment-gateway-integration-with-django.html
-    def verify_signature(response_data):
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        return client.utility.verify_payment_signature(response_data)
-
-    if "razorpay_signature" in request.POST:
-        payment_id = request.POST.get("razorpay_payment_id", "")
-        provider_order_id = request.POST.get("razorpay_order_id", "")
-        signature_id = request.POST.get("razorpay_signature", "")
-        order = Order.objects.get(razorpay_order_id=provider_order_id)
-        order.payment_id = payment_id
-        order.signature_id = signature_id
-        order.save()
-        print('verify_signature(request.POST)',verify_signature(request.POST))
-        if not verify_signature(request.POST):
-            order.payment_status = PaymentStatus.SUCCESS
-            order.save()
-            return render(request, "payment/callback.html", context={"status": order.status})
-        else:
-            order.payment_status = PaymentStatus.FAILURE
-            order.save()
-            return render(request, "payment/callback.html", context={"status": order.status})
-    else:
-        payment_id = json.loads(request.POST.get("error[metadata]")).get("payment_id")
-        provider_order_id = json.loads(request.POST.get("error[metadata]")).get(
-            "order_id"
-        )
-        order = Order.objects.get(provider_order_id=provider_order_id)
-        order.payment_id = payment_id
-        order.payment_status = PaymentStatus.FAILURE
-        order.save()
-        return render(request, "payment/callback.html", context={"status": order.status})
-
-
-# def callBack(request):  # callback view to handle successful and failed payments.
-#     if request.method == "POST":
-#         try:
-#             payment_id = request.POST.get('razorpay_payment_id', '')
-#             order_id = request.POST.get('razorpay_order_id', '')
-#             signature = request.POST.get('razorpay_signature', '')
-#             params_dict = {
-#                 'razorpay_order_id': order_id,
-#                 'razorpay_payment_id': payment_id,
-#                 'razorpay_signature': signature
-#             }
-#             try:
-#                 order_db = Order.objects.get(razorpay_order_id=order_id)
-#             except:
-#                 return HttpResponse("505 Not Found")
-#             order_db.razorpay_payment_id = payment_id
-#             order_db.razorpay_signature = signature
-#             order_db.save()
-#             result = razorpay_client.utility.verify_payment_signature(params_dict)
-#             print('rslt',result)
-#             if result == None:
-#                 amount = order_db.total_amount * 100  # we have to pass in paisa
+# def callBack(request):  # reference :https://scalereal.com/backend/2021/12/20/razorpay-payment-gateway-integration-with-django.html
+#     def verify_signature(response_data):
+#         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+#         return client.utility.verify_payment_signature(response_data)
 #
-#                 try:
-#                     razorpay_client.payment.capture(payment_id, amount)
-#                     order_db.payment_status = 1
-#                     order_db.save()
-#                     return render(request, 'payment/paymentsuccess.html', {'id': order_db.id})
-#                 except:
-#                     order_db.payment_status = 2
-#                     order_db.save()
-#                     return render(request, 'payment/paymentfailed.html')
-#             else:
-#
-#                 import pdb
-#                 pdb.set_trace()
-#                 order_db.payment_status = 2
-#                 order_db.save()
-#                 return render(request, 'payment/paymentfailed.html')
-#         except:
-#             return HttpResponse("505 not found")
+#     if "razorpay_signature" in request.POST:
+#         payment_id = request.POST.get("razorpay_payment_id", "")
+#         provider_order_id = request.POST.get("razorpay_order_id", "")
+#         signature_id = request.POST.get("razorpay_signature", "")
+#         order = Order.objects.get(razorpay_order_id=provider_order_id)
+#         order.payment_id = payment_id
+#         order.signature_id = signature_id
+#         order.save()
+#         print('verify_signature(request.POST)', verify_signature(request.POST))
+#         if not verify_signature(request.POST):
+#             order.payment_status = PaymentStatus.SUCCESS
+#             order.save()
+#             return render(request, "payment/callback.html", context={"status": order.status})
+#         else:
+#             order.payment_status = PaymentStatus.FAILURE
+#             order.save()
+#             return render(request, "payment/callback.html", context={"status": order.status})
+#     else:
+#         payment_id = json.loads(request.POST.get("error[metadata]")).get("payment_id")
+#         provider_order_id = json.loads(request.POST.get("error[metadata]")).get(
+#             "order_id"
+#         )
+#         order = Order.objects.get(provider_order_id=provider_order_id)
+#         order.payment_id = payment_id
+#         order.payment_status = PaymentStatus.FAILURE
+#         order.save()
+#         return render(request, "payment/callback.html", context={"status": order.status})
+
+def callBack(request):
+    if request.method == "POST":
+        try:
+            payment_id = request.POST.get('razorpay_payment_id', '')
+            order_id = request.POST.get('razorpay_order_id', '')
+            signature = request.POST.get('razorpay_signature', '')
+            params_dict = {
+                'razorpay_order_id': order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature
+            }
+            try:
+                order_db = Order.objects.get(razorpay_order_id=order_id)
+            except:
+                return HttpResponse("505 Not Found")
+            order_db.razorpay_payment_id = payment_id
+            order_db.razorpay_signature = signature
+            order_db.save()
+            result = razorpay_client.utility.verify_payment_signature(params_dict)
+            print('**********')
+            print('result',result)
+            print('**********')
+
+            if result == None:
+                amount = order_db.total_amount * 100  # we have to pass in paisa
+                try:
+                    razorpay_client.payment.capture(payment_id, amount)
+                    order_db.payment_status = 1
+                    order_db.save()
+
+                    ## For generating Invoice PDF
+                    template = get_template('firstapp/payment/invoice.html')
+                    data = {
+                        'order_id': order_db.order_id,
+                        'transaction_id': order_db.razorpay_payment_id,
+                        'user_email': order_db.user.email,
+                        'date': str(order_db.datetime_of_payment),
+                        'name': order_db.user.name,
+                        'order': order_db,
+                        'amount': order_db.total_amount,
+                    }
+                    html = template.render(data)
+                    result = BytesIO()
+                    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")),
+                                            result)  # , link_callback=fetch_resources)
+                    pdf = result.getvalue()
+                    filename = 'Invoice_' + data['order_id'] + '.pdf'
+
+                    mail_subject = 'Recent Order Details'
+                    # message = render_to_string('payment/emailinvoice.html', {
+                    #     'user': order_db.user,
+                    #     'order': order_db
+                    # })
+                    context_dict = {
+                        'user': order_db.user,
+                        'order': order_db
+                    }
+                    template = get_template('firstapp/payment/emailinvoice.html')
+                    message = template.render(context_dict)
+                    to_email = order_db.user.email
+                    # email = EmailMessage(
+                    #     mail_subject,
+                    #     message,
+                    #     settings.EMAIL_HOST_USER,
+                    #     [to_email]
+                    # )
+
+                    # for including css(only inline css works) in mail and remove autoescape off
+                    email = EmailMultiAlternatives(
+                        mail_subject,
+                        "hello",  # necessary to pass some message here
+                        settings.EMAIL_HOST_USER,
+                        [to_email]
+                    )
+                    # email.attach_alternative(message, "text/html")
+                    email.attach(filename, pdf, 'application/pdf')
+                    email.send(fail_silently=False)
+
+                    return render(request, 'payment/paymentsuccess.html', {'id': order_db.id})
+                except:
+                    order_db.payment_status = 2
+                    order_db.save()
+                    return render(request, 'payment/paymentfailed.html')
+            else:
+                order_db.payment_status = 2
+                order_db.save()
+                return render(request, 'payment/paymentfailed.html')
+        except:
+            return HttpResponse("505 not found")
+
+
+# dynamic pdf generator
+def fetch_resources(uri,
+                    rel):  # use this function only when using , link_callback=fetch_resources in render_to+pdf method
+    path = os.path.join(uri.replace(settings.STATIC_URL, ""))
+    return path
+
+
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)  # , link_callback=fetch_resources)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+
+class GenerateInvoice(View):
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            order_db = Order.objects.get(id=pk, user=request.user,
+                                         payment_status='Success')  # you can filter using order_id as well
+        except:
+            return HttpResponse("505 Not Found")
+        data = {
+            'order_id': order_db.order_id,
+            'transaction_id': order_db.razorpay_payment_id,
+            'user_email': order_db.user.email,
+            'date': str(order_db.datetime_of_payment),
+            'name': order_db.user.name,
+            'order': order_db,
+            'amount': order_db.total_amount,
+        }
+        pdf = render_to_pdf('payment/invoice.html', data)
+        # return HttpResponse(pdf, content_type='application/pdf')
+
+        # force download
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            filename = "Invoice_%s.pdf" % (data['order_id'])
+            content = "inline; filename='%s'" % (filename)
+            # download = request.GET.get("download")
+            # if download:
+            content = "attachment; filename=%s" % (filename)
+            response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Not found")

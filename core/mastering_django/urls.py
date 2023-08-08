@@ -60,6 +60,9 @@ urlpatterns = [
     path('payment/', views.payment, name='payment'),
     path('callback/', views.callBack, name='callback'),
 
+    # dynamic pdf generator
+    path('generate-invoice/<int:pk>/', views.GenerateInvoice.as_view(), name='generate-invoice'),
+
 ]
 
 #
