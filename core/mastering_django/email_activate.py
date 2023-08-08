@@ -1,6 +1,6 @@
 from django.contrib.auth import login
 from django.http import HttpResponse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 
 from mastering_django.models import CustomUser
@@ -10,7 +10,7 @@ from mastering_django.tokens import account_activation_token
 def activate(request, uidb64, token):
     try:
         print('email')
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = CustomUser.objects.get(pk=uid)
     except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
         user = None
