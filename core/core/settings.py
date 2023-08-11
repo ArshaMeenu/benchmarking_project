@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'captcha',
     'multiselectfield',
+    'cities_light',
 
     # apps
     'emailattach',
@@ -101,9 +102,8 @@ DATABASES = {
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
         'PORT': '5432',
-        }
+    }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -172,7 +172,7 @@ DEFAULT_FROM_EMAIL = "arsha@sayonetech.com"
 # Django Crispy package
 # CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-AUTH_USER_MODEL = 'mastering_django.CustomUser'
+AUTH_USER_MODEL = 'mastering_django.CustomUser'  ### this for mastering_django's customer model
 
 # recaptcha config
 RECAPTCHA_PUBLIC_KEY = '6LezoDInAAAAAAw8Pq3HrexXC4Q6eTFTHp5YvFTd'
@@ -183,7 +183,6 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 LOGIN_URL = 'mastering_django:login'
 LOGIN_REDIRECT_URL = 'mastering_django:index-function-view'
 LOGOUT_REDIRECT_URL = 'mastering_django:index-function-view'
-
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'  # here we can override tags meaning in place of there actual color replace by another
