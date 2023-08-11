@@ -12,9 +12,7 @@ urlpatterns = [
                   path('modelrelationship/', include('modelrelationship.urls')),
                   path('mastering-django/',
                        include(('mastering_django.urls', 'mastering_django'), namespace='mastering_django')),
-                  path('training-placement/',
-                       include(('training_placement_app.urls', 'training_placement'), namespace='training_placement')),
-
+                  
                   path("__debug__/", include("debug_toolbar.urls")),  # for debug tooler
               ]
 
